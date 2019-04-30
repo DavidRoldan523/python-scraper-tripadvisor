@@ -6,7 +6,7 @@ Scrapping for TripAdvisor filter by all languages &amp; all tripadvisor pages
 
 **Python 3** 
 
-**For Chrome 73.0.3683.68**
+**For Chrome [73.0.3683.68](https://chromedriver.storage.googleapis.com/index.html?path=73.0.3683.68/)**
 
 **Install your version**
 _________________________________________________________________________________________________________________________________________________________________________________
