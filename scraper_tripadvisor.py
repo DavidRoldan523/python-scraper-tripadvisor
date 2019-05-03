@@ -3,16 +3,35 @@ from time import sleep
 
 from selenium import webdriver
 
+from collections import OrderedDict
+
+
+def replace_all_in_string(text, dic):
+    OrderedDict(dic)
+    for i, j in dic.items():
+        text = text.replace(i, j)
+    return text
+
+
 def calculate_stop_reviews(total_reviews):
-    stop_loop_for = int(int(total_reviews.replace('.', '').replace('(', '').replace(')', '')) / 5)
+    replace_in_total_reviews = {'.': '',
+                                '(': '',
+                                ')': '', }
+    stop_loop_for = int(int(replace_all_in_string(total_reviews, replace_in_total_reviews)) / 5)
     if stop_loop_for % 2 == 0:
         stop_loop_for += 1
     else:
         stop_loop_for += 2
     return stop_loop_for
 
+
 def get_all_reviews(hotel, language):
     review_total_pages = []
+    replace_in_reviews_date = {"Fecha de la estadía:": "",
+                               " de ": "-",
+                               " ": "01-", }
+    replace_in_reviews_rating = {"ui_bubble_rating bubble_": "",
+                                 '0': '', }
     page = webdriver.Chrome('./chromedriver.exe')
     page.get(hotel)
     sleep(2)
@@ -57,9 +76,9 @@ def get_all_reviews(hotel, language):
         for review in reviews:
             review_dict = {
                 'review_text': review.find_elements_by_xpath('//q[@class="hotels-review-list-parts-ExpandableReview__reviewText--3oMkH"]')[reviews_count].text,
-                'review_date': review.find_elements_by_xpath('//div[@class="hotels-review-list-parts-EventDate__event_date--CRXs4"]')[reviews_count].text,
+                'review_date': replace_all_in_string(review.find_elements_by_xpath('//div[@class="hotels-review-list-parts-EventDate__event_date--CRXs4"]')[reviews_count].text, replace_in_reviews_date),
                 'review_header': review.find_elements_by_xpath('//div[@class="hotels-review-list-parts-ReviewTitle__reviewTitle--2Fauz"]')[reviews_count].text,
-                'review_rating': "XXXXX",
+                'review_rating': replace_all_in_string(review.find_elements_by_xpath('//div[@class="hotels-review-list-parts-RatingLine__bubbles--1oCI4"]/span')[reviews_count].get_attribute('class'), replace_in_reviews_rating),
                 'review_author': review.find_elements_by_xpath('//a[@class="ui_header_link social-member-event-MemberEventOnObjectBlock__member--35-jC"]')[reviews_count].text
             }
             review_total_pages.append(review_dict)
